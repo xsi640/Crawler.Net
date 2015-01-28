@@ -9,7 +9,7 @@ namespace Crawler.Capture
 {
     public class HttpDownloader
     {
-        public string GetConetn(string url)
+        public string GetContent(string url)
         {
             string result = string.Empty;
             var webRequest = WebRequest.Create(url);

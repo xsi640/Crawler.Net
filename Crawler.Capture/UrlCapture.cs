@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Crawler.Helper.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,7 +22,7 @@ namespace Crawler.Capture
                 string url = m.Groups[1].Value;
                 foreach (string u in _UrlPrefix)
                 {
-                    if (url.StartsWith(u))
+                    if (url.StartsWith(u) && RegexHelper.IsUrl(url))
                     {
                         result.Add(url);
                         break;
