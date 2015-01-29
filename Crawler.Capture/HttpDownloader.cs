@@ -9,21 +9,33 @@ namespace Crawler.Capture
 {
     public class HttpDownloader
     {
-        public string GetContent(string url)
+        private IWebProxy _WebProxy = null;
+        private string _Url = string.Empty;
+        private string _UserAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)";
+        private bool _IsCacheDns = false;
+        private int _Timeout = 30000;
+        private string _ContentType = "application/x-www-form-urlencoded";
+        private string _HtmlContent = string.Empty;
+
+        public HttpDownloader(string url)
         {
-            string result = string.Empty;
-            var webRequest = WebRequest.Create(url);
-            using (var response = webRequest.GetResponse())
+            this._Url = url;
+        }
+
+        public void Download()
+        {
+            HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(this._Url);
+            httpWebRequest.Proxy = this._WebProxy;
+            using (HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse())
             {
-                using (var content = response.GetResponseStream())
+                using (Stream stream = httpWebResponse.GetResponseStream())
                 {
-                    using (var reader = new StreamReader(content))
+                    using (StreamReader sr = new StreamReader(stream))
                     {
-                        result = reader.ReadToEnd();
+                        this._HtmlContent = sr.ReadToEnd();
                     }
                 }
             }
-            return result;
         }
     }
 }
