@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SYFramework.Net.Basic
+namespace Crawler.Net.Basic
 {
     /// <summary>
     /// dotnet FrameWork 里面的HttpUtility类，反编译出来
@@ -272,8 +272,6 @@ namespace SYFramework.Net.Basic
                 return result;
             try
             {
-                result = EncryptHelper.Encrypt(param);
-                result = result.Replace('+', '~');
                 result = Uri.EscapeDataString(result);
             }
             catch (Exception)
@@ -298,8 +296,6 @@ namespace SYFramework.Net.Basic
             try
             {
                 result = Uri.UnescapeDataString(param);
-                result = result.Replace('~', '+');
-                result = EncryptHelper.Decrypt(result);
             }
             catch (Exception)
             {
