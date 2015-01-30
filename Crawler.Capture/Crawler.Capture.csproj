@@ -42,7 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindableBase.cs" />
     <Compile Include="CapturerItem.cs" />
+    <Compile Include="CapturerManager.cs" />
     <Compile Include="ECapturerStatus.cs" />
     <Compile Include="HttpDownloader.cs">
       <SubType>Code</SubType>
@@ -53,9 +55,17 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Crawler.DBAccess\Crawler.DBAccess.csproj">
+      <Project>{f4ba5993-2f30-47b8-b17d-0d12516176b2}</Project>
+      <Name>Crawler.DBAccess</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Crawler.Helper\Crawler.Helper.csproj">
       <Project>{df4ad80a-49b5-4902-a3fd-34c9c8e5898e}</Project>
       <Name>Crawler.Helper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Crawler.Log\Crawler.Log.csproj">
+      <Project>{ed57555e-08d8-41e7-9bf7-d956202b6725}</Project>
+      <Name>Crawler.Log</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

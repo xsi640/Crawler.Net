@@ -14,5 +14,7 @@ namespace Crawler.Capture
         Error,
         Finish,
         Stop,
+        Paused,
+        Pausing,
     }
 }

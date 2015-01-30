@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crawler.Capture", "Crawler.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crawler.Net.Console", "Crawler.Net.Console\Crawler.Net.Console.csproj", "{A597704C-0CE9-475A-B901-D2165072C021}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crawler.Log", "Crawler.Log\Crawler.Log.csproj", "{ED57555E-08D8-41E7-9BF7-D956202B6725}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crawler.DBAccess", "Crawler.DBAccess\Crawler.DBAccess.csproj", "{F4BA5993-2F30-47B8-B17D-0D12516176B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{A597704C-0CE9-475A-B901-D2165072C021}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A597704C-0CE9-475A-B901-D2165072C021}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A597704C-0CE9-475A-B901-D2165072C021}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED57555E-08D8-41E7-9BF7-D956202B6725}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED57555E-08D8-41E7-9BF7-D956202B6725}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED57555E-08D8-41E7-9BF7-D956202B6725}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED57555E-08D8-41E7-9BF7-D956202B6725}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4BA5993-2F30-47B8-B17D-0D12516176B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4BA5993-2F30-47B8-B17D-0D12516176B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4BA5993-2F30-47B8-B17D-0D12516176B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4BA5993-2F30-47B8-B17D-0D12516176B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Crawler.Capture;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,9 @@ namespace Crawler.Net.Console
     {
         static void Main(string[] args)
         {
+            CapturerManager mananger = new CapturerManager();
+            mananger.Enqueue("http://www.cnblogs.com/");
+            System.Console.ReadKey();
         }
     }
 }
