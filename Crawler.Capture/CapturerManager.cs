@@ -14,6 +14,12 @@ namespace Crawler.Capture
         private ThreadSafeQueue<CapturerItem> _Queue = new ThreadSafeQueue<CapturerItem>();
         private ThreadSafeList<CapturerItem> _RunningLists = new ThreadSafeList<CapturerItem>();
         private int _MaxWorkingCount = 5;
+        private int _MaxWorkQueueCount = 1000;
+
+        public event Action<CapturerItem> CapturerAdded;
+        public event Action<CapturerItem> CapturerLeaked;
+        public event Action<CapturerItem> CapturerStatusChanged;
+        public event Action CapturerIdled;
 
         public CapturerManager()
         { }
@@ -31,11 +37,15 @@ namespace Crawler.Capture
                 return url == w.Url;
             })))
             {
-                if (this.IsCheck(url))
-                    return;
                 CapturerItem capturer = new CapturerItem(url);
                 capturer.Status = ECapturerStatus.Queue;
+                if (this._Queue.Count > this._MaxWorkQueueCount)
+                {
+                    this.OnCapturerLeaked(capturer);
+                    return;
+                }
                 this._Queue.Enqueue(capturer);
+                this.OnCapturerAdded(capturer);
                 this.Scheduling();
             }
         }
@@ -50,10 +60,14 @@ namespace Crawler.Capture
                 return capturer.Url == w.Url;
             })))
             {
-                if (this.IsCheck(capturer.Url))
-                    return;
                 capturer.Status = ECapturerStatus.Queue;
+                if (this._Queue.Count > this._MaxWorkQueueCount)
+                {
+                    this.OnCapturerLeaked(capturer);
+                    return;
+                }
                 this._Queue.Enqueue(capturer);
+                this.OnCapturerAdded(capturer);
                 this.Scheduling();
             }
         }
@@ -66,6 +80,8 @@ namespace Crawler.Capture
                 capturer.PropertyChanged += capturer_PropertyChanged;
                 capturer.Start();
             }
+            if (this._RunningLists.Count == 0 && this._Queue.Count == 0)
+                this.OnCapturerIdled();
         }
 
         void capturer_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -73,46 +89,36 @@ namespace Crawler.Capture
             if (e.PropertyName == "Status")
             {
                 CapturerItem item = sender as CapturerItem;
+                this.OnCapturerStatusChanged(item);
                 if (item.Status == ECapturerStatus.Finish ||
                     item.Status == ECapturerStatus.Error ||
                     item.Status == ECapturerStatus.Paused ||
                     item.Status == ECapturerStatus.Stop)
                 {
-                    if (item.Status == ECapturerStatus.Finish)
-                    {
-                        if (item.Urls != null)
-                        {
-                            foreach (string url in item.Urls)
-                            {
-                                this.Enqueue(url);
-                            }
-                        }
-                        if (item.RssUrls != null)
-                        {
-                            foreach (string rssUrl in item.RssUrls)
-                            {
-                                Console.WriteLine(rssUrl);
-                            }
-                        }
-                    }
-
                     this.Scheduling();
                 }
             }
         }
 
-        private bool IsCheck(string url)
+        private void OnCapturerAdded(CapturerItem item)
         {
-            return DALFactory.CaptureDAL.Count(string.Format("Url='{0}'", url)) > 0;
+            if (this.CapturerAdded != null)
+                this.CapturerAdded(item);
         }
-
-        private void Insert(CapturerItem item)
+        private void OnCapturerStatusChanged(CapturerItem item)
         {
-            DBAccess.Entities.Capture capture = new DBAccess.Entities.Capture();
-            capture.Status = (int)item.Status;
-            capture.Url = item.Url;
-            capture.Html = item.HtmlContent;
-            DALFactory.CaptureDAL.Insert(capture);
+            if (this.CapturerStatusChanged != null)
+                this.CapturerStatusChanged(item);
+        }
+        private void OnCapturerLeaked(CapturerItem item)
+        {
+            if (this.CapturerLeaked != null)
+                this.OnCapturerLeaked(item);
+        }
+        private void OnCapturerIdled()
+        {
+            if (this.CapturerIdled != null)
+                this.CapturerIdled();
         }
     }
 }

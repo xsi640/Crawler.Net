@@ -14,6 +14,7 @@ namespace Crawler.Capture
         private ECapturerStatus _Status = ECapturerStatus.Stop;
         private HttpDownloader _Downloader = null;
         private HtmlParser _Parser = null;
+        private object _Tag = null;
 
         public CapturerItem(string url)
         {
@@ -58,6 +59,10 @@ namespace Crawler.Capture
                 else
                     return this._Parser.RssUrls;
             }
+        }
+        public object Tag
+        {
+            get { return this._Tag; }
         }
 
         public void Start()
