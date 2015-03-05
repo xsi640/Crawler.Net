@@ -5,10 +5,8 @@ using System.Text;
 
 namespace Crawler.Capture
 {
-    public enum ECapturerStatus
+    public static class DataBaseHelper
     {
-        Queue,
-        Finish,
-        Error
+        
     }
 }

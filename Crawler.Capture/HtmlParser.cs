@@ -2,6 +2,7 @@
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -56,33 +57,59 @@ namespace Crawler.Capture
 
         public void GetRssUrls()
         {
-            var rssLinks = this._HtmlDocument.DocumentNode.Descendants("link")
-                           .Where(n => n.Attributes["type"] != null && n.Attributes["type"].Value == "application/rss+xml")
-                           .Select(n => n.Attributes["href"].Value);
-            this._RsssUrls = rssLinks.ToList();
+            HtmlNodeCollection collection = this._HtmlDocument.DocumentNode.SelectNodes("//link[@type=\"application/rss+xml\"]");
+            if (collection != null && collection.Count > 0)
+            {
+                this._RsssUrls = new List<string>();
+                foreach (HtmlNode node in collection)
+                {
+                    string url = node.Attributes["href"].Value;
+                    this._RsssUrls.Add(url);
+                }
+            }
         }
 
         public void GetUrls()
         {
-            var links = this._HtmlDocument.DocumentNode.Descendants("a")
-                           .Select(n => n.Attributes["href"].Value);
-            this._Urls = new List<string>();
-            foreach (string u in links)
+            try
             {
-                string url = string.Empty;
-                if (!u.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase))
+                HtmlNodeCollection collection = this._HtmlDocument.DocumentNode.SelectNodes("//a[@href]");
+                if (collection != null && collection.Count > 0)
                 {
-                    if (u.StartsWith("/", StringComparison.CurrentCultureIgnoreCase))
+                    this._Urls = new List<string>();
+                    foreach (HtmlNode node in collection)
                     {
-                        url = this._Domain + u;
-                    }
-                    else
-                    {
-                        url = this._Url + u;
+                        string url = string.Empty;
+                        string u = node.Attributes["href"].Value;
+                        if (u.StartsWith("#"))
+                            continue;
+                        if (u == "/" || string.IsNullOrWhiteSpace(u))
+                            continue;
+                        if (!u.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            if (u.StartsWith("/", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                url = this._Domain + u;
+                            }
+                            else
+                            {
+                                url = this._Url + u;
+                            }
+                        }
+                        else
+                            url = u;
+
+                        if (!url.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            Debug.WriteLine("");
+                        }
+                        this._Urls.Add(url);
                     }
                 }
-                url = u;
-                this._Urls.Add(url);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
     }

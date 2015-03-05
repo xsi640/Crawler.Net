@@ -11,7 +11,7 @@ namespace Crawler.Net.Console
         static void Main(string[] args)
         {
             CapturerManager mananger = new CapturerManager();
-            mananger.Enqueue("http://www.cnblogs.com/");
+            mananger.Add("http://www.cnblogs.com/");
             System.Console.ReadKey();
         }
     }

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{040427DB-D115-4DF9-A62D-39C15009D460}</ProjectGuid>
+    <ProjectGuid>{9B023740-0503-4164-AEF3-7ED5FD968EE8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Crawler.Capture</RootNamespace>
-    <AssemblyName>Crawler.Capture</AssemblyName>
+    <RootNamespace>PoReader.DBAccess.IDAL</RootNamespace>
+    <AssemblyName>PoReader.DBAccess.IDAL</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="HtmlAgilityPack">
-      <HintPath>..\dll\HtmlAgilityPack.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,27 +39,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BindableBase.cs" />
-    <Compile Include="CapturerItem.cs" />
-    <Compile Include="CapturerManager.cs" />
-    <Compile Include="DataBaseHelper.cs" />
-    <Compile Include="ECapturerStatus.cs" />
-    <Compile Include="HttpDownloader.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="IAdminInfoDAL.cs" />
+    <Compile Include="IArticleInfoDAL.cs" />
+    <Compile Include="IBaseDAL.cs" />
+    <Compile Include="ICategoryInfoDAL.cs" />
+    <Compile Include="IFavoritesCategoryInfoDAL.cs" />
+    <Compile Include="IFavoritesInfoDAL.cs" />
+    <Compile Include="IRssHostInfoDAL.cs" />
+    <Compile Include="IUrlDirectInfoDAL.cs" />
+    <Compile Include="IUserCategoryInfoDAL.cs" />
+    <Compile Include="IUserInfoDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="HtmlParser.cs">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Crawler.Helper\Crawler.Helper.csproj">
-      <Project>{df4ad80a-49b5-4902-a3fd-34c9c8e5898e}</Project>
-      <Name>Crawler.Helper</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Crawler.Log\Crawler.Log.csproj">
-      <Project>{ed57555e-08d8-41e7-9bf7-d956202b6725}</Project>
-      <Name>Crawler.Log</Name>
+    <ProjectReference Include="..\PoReader.DBAccess.Entities\PoReader.DBAccess.Entities.csproj">
+      <Project>{d914361c-4eb6-40ce-b9ab-13b76f6ec26c}</Project>
+      <Name>PoReader.DBAccess.Entities</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

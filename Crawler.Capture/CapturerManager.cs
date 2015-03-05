@@ -1,5 +1,4 @@
-﻿using Crawler.DBAccess.Entities;
-using Crawler.DBAccess.Factory;
+﻿using Crawler.Log;
 using Crawler.Net.Collection;
 using System;
 using System.Collections.Generic;
@@ -11,114 +10,52 @@ namespace Crawler.Capture
 {
     public class CapturerManager
     {
-        private ThreadSafeQueue<CapturerItem> _Queue = new ThreadSafeQueue<CapturerItem>();
-        private ThreadSafeList<CapturerItem> _RunningLists = new ThreadSafeList<CapturerItem>();
-        private int _MaxWorkingCount = 5;
-        private int _MaxWorkQueueCount = 1000;
+        private Queue<CapturerItem> _Queue = new Queue<CapturerItem>();
+        private int MAX_TASK = 1;
+        private int _CurrentTaskCount = 0;
 
-        public event Action<CapturerItem> CapturerAdded;
-        public event Action<CapturerItem> CapturerLeaked;
-        public event Action<CapturerItem> CapturerStatusChanged;
-        public event Action CapturerIdled;
-
-        public CapturerManager()
-        { }
-
-        public int MaxWorkingCount
+        public void Add(string url)
         {
-            get { return this._MaxWorkingCount; }
-            set { this._MaxWorkingCount = value; }
-        }
-
-        public void Enqueue(string url)
-        {
-            if (!this._Queue.Contains(new Match<CapturerItem>((w) =>
+            if (this._Queue.SingleOrDefault(item => item.Url == url) == null)
             {
-                return url == w.Url;
-            })))
-            {
-                CapturerItem capturer = new CapturerItem(url);
-                capturer.Status = ECapturerStatus.Queue;
-                if (this._Queue.Count > this._MaxWorkQueueCount)
-                {
-                    this.OnCapturerLeaked(capturer);
-                    return;
-                }
-                this._Queue.Enqueue(capturer);
-                this.OnCapturerAdded(capturer);
-                this.Scheduling();
+                CapturerItem item = new CapturerItem(url);
+                this._Queue.Enqueue(item);
+                this.Dispatch();
             }
         }
 
-        public void Enqueue(CapturerItem capturer)
+        void item_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (capturer == null)
-                return;
-
-            if (!this._Queue.Contains(new Match<CapturerItem>((w) =>
+            CapturerItem item = sender as CapturerItem;
+            item.PropertyChanged -= item_PropertyChanged;
+            if (item.Status == ECapturerStatus.Finish)
             {
-                return capturer.Url == w.Url;
-            })))
+                this.Handle(item);
+                this._CurrentTaskCount--;
+                this.Dispatch();
+            }
+            else if (item.Status == ECapturerStatus.Error)
             {
-                capturer.Status = ECapturerStatus.Queue;
-                if (this._Queue.Count > this._MaxWorkQueueCount)
-                {
-                    this.OnCapturerLeaked(capturer);
-                    return;
-                }
-                this._Queue.Enqueue(capturer);
-                this.OnCapturerAdded(capturer);
-                this.Scheduling();
+                this._CurrentTaskCount--;
+                this.Dispatch();
             }
         }
 
-        private void Scheduling()
+        private void Dispatch()
         {
-            while (this._RunningLists.Count < this._MaxWorkingCount && this._Queue.Count > 0)
+            while (this._CurrentTaskCount < MAX_TASK && this._Queue.Count > 0)
             {
-                CapturerItem capturer = this._Queue.Dequeue();
-                capturer.PropertyChanged += capturer_PropertyChanged;
-                capturer.Start();
-            }
-            if (this._RunningLists.Count == 0 && this._Queue.Count == 0)
-                this.OnCapturerIdled();
-        }
-
-        void capturer_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Status")
-            {
-                CapturerItem item = sender as CapturerItem;
-                this.OnCapturerStatusChanged(item);
-                if (item.Status == ECapturerStatus.Finish ||
-                    item.Status == ECapturerStatus.Error ||
-                    item.Status == ECapturerStatus.Paused ||
-                    item.Status == ECapturerStatus.Stop)
-                {
-                    this.Scheduling();
-                }
+                CapturerItem item = this._Queue.Dequeue();
+                item.PropertyChanged += item_PropertyChanged;
+                item.Start();
+                this._CurrentTaskCount++;
             }
         }
 
-        private void OnCapturerAdded(CapturerItem item)
+        private void Handle(CapturerItem item)
         {
-            if (this.CapturerAdded != null)
-                this.CapturerAdded(item);
-        }
-        private void OnCapturerStatusChanged(CapturerItem item)
-        {
-            if (this.CapturerStatusChanged != null)
-                this.CapturerStatusChanged(item);
-        }
-        private void OnCapturerLeaked(CapturerItem item)
-        {
-            if (this.CapturerLeaked != null)
-                this.OnCapturerLeaked(item);
-        }
-        private void OnCapturerIdled()
-        {
-            if (this.CapturerIdled != null)
-                this.CapturerIdled();
+            foreach (string url in item.Urls)
+                this.Add(url);
         }
     }
 }

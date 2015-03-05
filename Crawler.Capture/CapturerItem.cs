@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,7 +12,7 @@ namespace Crawler.Capture
     public class CapturerItem : BindableBase
     {
         private string _Url = string.Empty;
-        private ECapturerStatus _Status = ECapturerStatus.Stop;
+        private ECapturerStatus _Status = ECapturerStatus.Queue;
         private HttpDownloader _Downloader = null;
         private HtmlParser _Parser = null;
         private object _Tag = null;
@@ -68,11 +69,8 @@ namespace Crawler.Capture
         public void Start()
         {
             if (this.Status == ECapturerStatus.Queue ||
-                this.Status == ECapturerStatus.Stop ||
-                this.Status == ECapturerStatus.Paused ||
                 this.Status == ECapturerStatus.Finish)
             {
-                this.Status = ECapturerStatus.Initialise;
                 ThreadPool.QueueUserWorkItem(new WaitCallback(this.BeginStart));
             }
         }
@@ -83,41 +81,27 @@ namespace Crawler.Capture
             {
                 if (this._Downloader == null)
                     this._Downloader = new HttpDownloader(this._Url);
-
-                this.Status = ECapturerStatus.Downloading;
+                Debug.WriteLine("下载URL:" + this._Url);
+                //下载
                 this._Downloader.Download();
-
-                if (this.Status == ECapturerStatus.Pausing ||
-                    this.Status == ECapturerStatus.Paused)
-                    this.Status = ECapturerStatus.Paused;
-
-                this.Status = ECapturerStatus.Parser;
                 if (this._Parser == null)
                     this._Parser = new HtmlParser(this._Url, this._Downloader.HtmlContent);
 
-                if (this.Status == ECapturerStatus.Pausing ||
-                    this.Status == ECapturerStatus.Paused)
-                    this.Status = ECapturerStatus.Paused;
+
+                Debug.WriteLine("解析URL:" + this._Url);
+                //解析Url
                 this._Parser.GetUrls();
+
+                //解析RssUrl
                 this._Parser.GetRssUrls();
 
                 this.Status = ECapturerStatus.Finish;
             }
             catch (Exception ex)
             {
-                Logger.Instance.Log(ELogLevel.Error, typeof(CapturerItem), ex.ToString());
+                Logger.Instance.Log(ELogLevel.Error, typeof(CapturerItem) + " url:" + this._Url, ex.ToString());
                 this.Status = ECapturerStatus.Error;
             }
-        }
-
-        public void Stop()
-        {
-            this._Status = ECapturerStatus.Stop;
-        }
-
-        public void Pause()
-        {
-            this._Status = ECapturerStatus.Pausing;
         }
     }
 }
