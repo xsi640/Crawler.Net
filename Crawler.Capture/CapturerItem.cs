@@ -71,6 +71,7 @@ namespace Crawler.Capture
             if (this.Status == ECapturerStatus.Queue ||
                 this.Status == ECapturerStatus.Finish)
             {
+                this.Status = ECapturerStatus.Starting;
                 ThreadPool.QueueUserWorkItem(new WaitCallback(this.BeginStart));
             }
         }

@@ -47,6 +47,8 @@
     <Compile Include="CapturerManager.cs" />
     <Compile Include="DataBaseHelper.cs" />
     <Compile Include="ECapturerStatus.cs" />
+    <Compile Include="EHostStatus.cs" />
+    <Compile Include="HostItem.cs" />
     <Compile Include="HttpDownloader.cs">
       <SubType>Code</SubType>
     </Compile>
